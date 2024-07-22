@@ -3,7 +3,7 @@ from metrics import linguistic, structural
 from ast import literal_eval
 
 if __name__ == '__main__':
-    df = pd.read_csv('./results_conversations_with_annotation.csv', converters={"prompts": literal_eval,
+    df = pd.read_csv('./results/results_conversations_with_annotation.csv', converters={"prompts": literal_eval,
                                                                              "answers": literal_eval,
                                                                              "prompts_codes": literal_eval,
                                                                              "prompts_errors": literal_eval,
@@ -156,4 +156,4 @@ if __name__ == '__main__':
     df['total_sent'] = total_sent_list
     df['total_word_count'] = total_word_count_list
 
-    df.to_csv('./results_conversations_with_annotation.csv')
+    df.to_csv('./results/results_conversations_with_annotation.csv')
