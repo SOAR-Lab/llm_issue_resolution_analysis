@@ -6,12 +6,13 @@ import os.path
 from utils.api_call import ApiCallStyle
 import itertools
 
+# spacy.cli.download("en_core_web_lg")
 nlp = spacy.load('en_core_web_lg')
 
 
 class KnowledgeSeekingSharing:
 
-    def __int__(self):
+    def __init__(self):
         self.acc_indicators = ["thanks", "thx", "appreciate", "works", "helpful", "useful"]
 
     def analyze(self, text):
@@ -21,7 +22,7 @@ class KnowledgeSeekingSharing:
 
         # Remove code segments and replace with a blank
         try:
-            text = re.sub('`([^`]*)`', ' ', text)
+            text = re.sub('`([^`]*)`', '[CODE]', text)
         except:
             print("Error in removing code snippets from text")
         sentence = sent_tokenize(text)
@@ -31,36 +32,36 @@ class KnowledgeSeekingSharing:
         ks_word = ['how', 'where', 'what']
 
         for sent in sentence:
-            if ('?' in sent) or (sent.split(' ')[0] in ques_word):
-                is_prim_ques = 1
+            if ('?' in sent) or (sent.split(' ')[0].lower() in ques_word):
+                is_prim_ques += 1
                 # check if primary question is knowledge seeking
                 for word in ks_word:
                     if word in sent:
-                        is_prim_ks_ques = 1
+                        is_prim_ks_ques += 1
 
         # Check if there is an accepted answer (primary questioner replies with any of the indicators above)
         # Checking similarity of indicators using word embeddings of sentences.
-        for sent in sentence:
-            for ind in self.acc_indicators:
-                if nlp(ind).similarity(nlp(sent)) > 0.5:
-                    is_acc_ans = 1
-
-        print("\nKnowledge Seeking/Sharing")
-        print("##########################")
-        print("Primary question?: ", is_prim_ques)
-        print("Primary question knowledge-seeking?: ", is_prim_ks_ques)
-        print("An acceptance of answer?: ", is_acc_ans)
+        # for sent in sentence:
+        #     for ind in self.acc_indicators:
+        #         if nlp(ind).similarity(nlp(sent)) > 0.7:
+        #             is_acc_ans += 1
+        #
+        # print("\nKnowledge Seeking/Sharing")
+        # print("##########################")
+        # print("# of Primary question: ", is_prim_ques)
+        # print("# of Primary question knowledge-seeking: ", is_prim_ks_ques)
+        # print("# of acceptance of answer: ", is_acc_ans)
 
         return is_prim_ques, is_prim_ks_ques, is_acc_ans
 
 
 class Contextual:
-    def __int__(self):
+    def __init__(self):
         self.tokenizer = RegexpTokenizer(r'\w+')
         self.code_reg = r'`([^`]*)`|```([^`]+)```'
         self.error_regex = r'error(.*?):'  # "Error followed by a colon is a general pattern for errors and stack trace"
 
-    def analyze(self, message):
+    def analyze(self, message, errors_list, codes_list, code_blocks_list):
         urls = []
         code_snippets_count = 0
         contain_code = 0
@@ -76,15 +77,12 @@ class Contextual:
         err_msg = 0
         contain_err_msg = 0
 
+        codes_list.extend(code_blocks_list)
+
         # Remove code segments and replace with a blank
-        text = re.sub(self.code_reg, ' ', message)
+        text = re.sub(self.code_reg, '[CODE]', message)
 
-        # Calculate the number of urls
-        url_re = urlmatch.url_re
-
-        findurls = re.findall(url_re, text)
-        for url in findurls:
-            urls.append(url)
+        findurls = text.count('[URL]')
 
         # Calculate number of API mentions in text
         for style in ApiCallStyle:
@@ -93,18 +91,21 @@ class Contextual:
                 api_calls_text.append(match.group())
             if len(api_calls_text) != 0:
                 break
+        # print(api_calls_text)
 
         # Contains code
-        findcode = re.findall(self.code_reg, message)
-        findcode = list(filter(None, findcode))
-        for code in findcode:
+        for code in codes_list:
+            if len(code) == 0 or len(code) == 1:
+                continue
             code_snippets.append(code)
             code_snippet_size += (len(code) - code.count(' '))
             contain_code = 1
-        code_snippets_count += len(findcode)
+        code_snippets_count += len(code_snippets)
 
         # Check if there is error message
-        if re.search(self.error_regex, message, re.IGNORECASE):
+        for error in errors_list:
+            if len(error) == 0 or len(error) == 1:
+                continue
             err_msg += 1
             contain_err_msg = 1
 
@@ -121,14 +122,14 @@ class Contextual:
                     code_desc_sent += 1
                     contain_code_desc = 1
 
-        # Add to code snippet count if there is a link to code snippet in the message
-        for url in urls:
-            if url.startswith('https://gist'):
-                code_snippets_count += 1
-                contain_code = 1
-            if url.startswith('https://pastebin'):
-                code_snippets_count += 1
-                contain_code = 1
+        # # Add to code snippet count if there is a link to code snippet in the message
+        # for url in urls:
+        #     if url.startswith('https://gist'):
+        #         code_snippets_count += 1
+        #         contain_code = 1
+        #     if url.startswith('https://pastebin'):
+        #         code_snippets_count += 1
+        #         contain_code = 1
 
         try:
             mean_code_size = code_snippet_size / code_snippets_count
@@ -151,17 +152,17 @@ class Contextual:
 
         print("\nContextual")
         print("#############")
-        print("Number of urls: ", len(urls))
-        print("Number of code snippets: ", code_snippets_count, code_snippets)
+        print("Number of urls: ", findurls)
+        print("Number of code snippets: ", code_snippets_count)
         print("Mean size of code snippets: ", mean_code_size)
         print("Number of unique API calls in code: ", len(set(api_calls_code)))
         print("Number of unique API calls in text: ", len(set(api_calls_text)))
         print("Number of sentences describing code: ", code_desc_sent)
-        print("Number of SE words: ", len(SE_words), SE_words)
+        print("Number of SE words: ", len(SE_words))
         print("Number of error messages: ", err_msg)
 
-        return (len(set(api_calls_text)), len(urls), contain_code, contain_code_desc, mean_code_size, contain_err_msg,
-                len(SE_words), code_identifiers)
+        return (findurls, code_snippets_count, mean_code_size, len(set(api_calls_code)), len(set(api_calls_text)),
+                code_desc_sent, len(SE_words), err_msg)
 
     def SEWords(self):
         my_path = os.path.abspath(os.path.dirname(__file__))

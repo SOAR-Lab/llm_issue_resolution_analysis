@@ -12,7 +12,7 @@ import numpy as np
 
 
 class Psycholinguistics:
-    def __int__(self):
+    def __init__(self):
         pass
 
 
@@ -20,12 +20,12 @@ class Diversity:
     def __init__(self):
         self.tokenizer = RegexpTokenizer(r'\w+')
 
-    def analyze(self, text):
+    def analyze(self, clean_text):
         total_sent = 0
         total_word = []
         total_word_count = []
 
-        message = text
+        message = clean_text
         # Remove code segments and replace with a blank
         message = re.sub(r'`([^`]*)`|```([^`]+)```', ' ', message)
         # Remove urls and replace with "url"
@@ -51,10 +51,10 @@ class Diversity:
 
         print("\nDiversity")
         print("#############")
-        print("# Unique words: ", distinct_words)
+        print("# Unique words: ", len(distinct_words))
         print("# Unique information: ", uniq_info)
 
-        return distinct_words, uniq_info
+        return len(distinct_words), uniq_info
 
 
 class Readability:
@@ -63,6 +63,7 @@ class Readability:
         df = pd.read_excel(os.path.join(my_path, 'TextSpeak.xlsx'))
         text_speak_list = (df['Abbv']).tolist()
 
+        # spacy.cli.download("en_core_web_sm")
         self.nlp = spacy.load('en_core_web_sm')
         self.spell = SpellChecker()
         self.spell.word_frequency.load_text_file(os.path.join(my_path, 'synonymAbbreviation_manualCheck.txt'))
@@ -72,7 +73,7 @@ class Readability:
         self.stemmer = PorterStemmer()
         self.text_speak = [str(x).lower() for x in text_speak_list]
 
-    def analyze(self, text, code_identifiers):
+    def analyze(self, text):
         incomplete_count = 0
         total_sent_count = 0
         incomplete = []
@@ -113,7 +114,7 @@ class Readability:
 
             # Calculate number of misspelled words
             # include code identifiers in list of words in dictionary
-            self.spell.word_frequency.load_words(id for id in code_identifiers)
+            # self.spell.word_frequency.load_words(id for id in code_identifiers)
             words = self.tokenizer.tokenize(sent)
             # Remove proper names (e.g. Usernames) and make sure all characters in the word are alphabets
             words = [word for word in words if (word.isalpha() and word[0].isupper() == False)]
@@ -133,15 +134,14 @@ class Readability:
 
         print("\nReadability")
         print("##########################")
-        print("Total number of misspelled words: ", len(misspelled), misspelled)
-        print("Total number of incomplete sentences: ", incomplete_count, incomplete)
+        print("Total number of misspelled words: ", len(misspelled))
+        print("Total number of incomplete sentences: ", incomplete_count)
         print("Total number of complete sentences: ", complete_count)
         print("Total number of text speaks: ", total_text_speak)
         print("Readability scores: ", ARI, Coleman_Liau, Flesch_reading_ease, Flesch_Kincaid_grade,
               Gunning_Fog, Smog)
 
-        return (len(misspelled), incomplete_count, ARI, Coleman_Liau,
-                Flesch_reading_ease, Flesch_Kincaid_grade, Gunning_Fog, Smog)
+        return len(misspelled), incomplete_count, complete_count, total_text_speak, ARI, Coleman_Liau, Flesch_reading_ease, Flesch_Kincaid_grade, Gunning_Fog, Smog
 
 
 class Verbosity:
@@ -170,6 +170,7 @@ class Verbosity:
         print("#############")
         print("Total no. of sentences: ", total_sent)
         print("Total no. of words: ", np.sum(total_word_count))
+        return total_sent, np.sum(total_word_count)
 
 
 class Sentiment:
