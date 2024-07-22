@@ -1,4 +1,4 @@
-# LLM Conversation Analysis
+# Exploring the Effectiveness of Conversational LLMs in GitHub Issue Resolution
 ## Project structure
 ```md
 ├── analysis
