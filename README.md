@@ -9,7 +9,6 @@
 │   └──  conversation_repo_parameters -> repository parameters extracted for each project in the conversation
 │   └──  final_annotated_conversations -> final annotated dataset, the result of our manual process for RQ1
 │   └──  initial_dataset -> Initial unfiltered annotated dataset
-│   └──  LIWC_conversation_progression -> Initial unfiltered annotated dataset
 ├── pickle_files
 │   └──  pickle files generated for the results of discourse analysis
 ├── conversation_analysis
