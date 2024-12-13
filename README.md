@@ -1,4 +1,5 @@
-# Exploring the Effectiveness of Conversational LLMs in GitHub Issue Resolution
+# Exploring the Role of Conversational LLMs in GitHub Issue Resolution Outcomes
+This repository contains the replication package for the study on analyzing the effectiveness of conversational LLMs, such as ChatGPT, in resolving GitHub issues. It includes the datasets, code, and documentation required to replicate our results and insights.
 ## Project structure
 ```md
 ├── analysis
@@ -26,3 +27,29 @@
 │   │   └── urlmatch.py -> a regex for finding URLs
 │   └── .gitignore
 ```
+
+## How to Use
+### 1. Data Collection
+Use the data_collection/main.ipynb notebook to collect GitHub issue threads with ChatGPT links.
+Ensure you have the necessary API keys for GitHub.
+
+### 2. Dataset Overview
+conversation_progression: Use this dataset to analyze conversation evolution across rounds.\
+LIWC_conversation_progression: Use this for advanced LIWC analysis.\
+conversation_repo_parameters: Understand project-level characteristics of repositories.\
+final_annotated_conversations: Access manually annotated conversations for RQ1.\
+
+### 3. Analysis
+Open analysis/main.ipynb to explore the research questions.
+The notebook includes steps for reproducing figures and statistical results.
+
+## 4. Scripts for Analysis
+linguistic.py and structural.py for Structural and Linguistic metrics evaluations.
+api_call.py, code_snippet.py, contractions.py, and urlmatch.py for preprocessing and feature extraction.
+
+### 5. Example
+Refer to example_conversation/Example Conversation.pdf for an illustrative example of issue resolution and its developer-ChatGPT conversation.
+
+### Prerequisites
+Python 3.9 or above
+Required libraries: Gensim, Pandas, NumPy, Scikit-learn, Matplotlib, NLTK, spaCy, spellchecker
