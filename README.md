@@ -39,7 +39,7 @@ Ensure you have the necessary API keys for GitHub.
 conversation_progression: Use this dataset to analyze conversation evolution across rounds.\
 LIWC_conversation_progression: Use this for advanced LIWC analysis.\
 conversation_repo_parameters: Understand project-level characteristics of repositories.\
-final_annotated_conversations: Access manually annotated conversations for RQ1.\
+final_annotated_conversations: Access manually annotated conversations for RQ1.
 
 ### 3. Analysis
 Open analysis/main.ipynb to explore the research questions.
