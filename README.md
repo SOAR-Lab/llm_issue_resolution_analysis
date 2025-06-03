@@ -11,6 +11,8 @@ This repository contains the replication package for the study on analyzing the 
 │   └──  LIWC_conversation_progression -> conversation progression dataset with LIWC measures to analyze discourse features
 │   └──  conversation_repo_parameters -> repository parameters extracted for each project in the conversation
 │   └──  final_annotated_conversations -> final annotated dataset, the result of our manual process for RQ1
+│   └──  issue_difficulty_metrics -> final annotated dataset with the results of issue metrics (issue difficulty)
+│   └──  issue_types -> final annotated dataset with the results of issue metrics (issue types)
 │   └──  initial_dataset -> Initial unfiltered annotated dataset
 ├── example_conversation
 │   └──  Example Conversation.pdf -> an example figure to show the full story behind an issue thread using chatgpt
