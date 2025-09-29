@@ -1,4 +1,4 @@
-# Exploring the Role of Conversational LLMs in GitHub Issue Resolution Outcomes
+# What Characteristics Make ChatGPT Effective for Software Issue Resolution? An Empirical Study of Task, Project, and Conversational Signals in GitHub Issues
 This repository contains the replication package for the study on analyzing the effectiveness of conversational LLMs, such as ChatGPT, in resolving GitHub issues. It includes the datasets, code, and documentation required to replicate our results and insights.
 ## Project structure
 ```md
